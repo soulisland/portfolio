@@ -160,7 +160,9 @@ h2{font-size:44px;font-weight:700;color:#f5f2ff;display:inline-block;}
   border-color:rgba(212,175,55,0.52);background:rgba(212,175,55,0.045);
 }
 .contact-box textarea{height:150px;resize:vertical}
-
+#gdpr-check {
+  transform: scale(1.2);
+}
 /* GDPR CONSENT */
 .gdpr-consent{display:flex;align-items:flex-start;gap:12px;margin:16px 0 0;padding:14px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);}
 .gdpr-consent input[type="checkbox"]{
@@ -367,13 +369,8 @@ h2{font-size:44px;font-weight:700;color:#f5f2ff;display:inline-block;}
       <input type="tel" name="phone" data-i18n-placeholder="ph_phone" placeholder="Il tuo numero di telefono">
       <textarea name="message" data-i18n-placeholder="ph_message" placeholder="Descrivi il tuo progetto..." required></textarea>
       <div class="gdpr-consent">
-        <input type="checkbox" id="gdpr-check" required style="
-        position: absolute;
-        opacity: 0;
-        width: 1px;
-        height: 1px;
-        pointer-events: none;
-        ">
+       <input type="checkbox" id="gdpr-check" required>
+        <label for="gdpr-check">Accetto la privacy policy</label>
         <label for="gdpr-check" data-i18n-html="gdpr_label">
           Ho letto e accetto la <a href="#" onclick="openPrivacy(event)">Privacy Policy</a>. Acconsento al trattamento dei miei dati personali ai sensi del Regolamento UE 2016/679 (GDPR) per ricevere una risposta alla mia richiesta.
         </label>
