@@ -18,8 +18,8 @@ load_dotenv()
 app = Flask(__name__)
 
 # ─── CORS: solo il tuo dominio ────────────────────────────────────────────────
-ALLOWED_ORIGIN = os.getenv("ALLOWED_ORIGIN", "http://portfolio-vert-mu-fbqkanoz77.vercel.app")
-CORS(app, origins=[os.getenv("ALLOWED_ORIGIN")])
+ALLOWED_ORIGIN = os.getenv("ALLOWED_ORIGIN", "https://portfolio-vert-mu-fbqkanoz77.vercel.app")
+CORS(app, origins=[ALLOWED_ORIGIN], supports_credentials=False)
 
 # ─── Security headers (HTTPS) ─────────────────────────────────────────────────
 csp = {
