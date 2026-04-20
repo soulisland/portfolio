@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Developer | Siti Web e Gestionali</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;background:#050505;color:#fff;overflow-x:hidden}
+
+header{
+  position:fixed;width:100%;padding:20px 60px;
+  display:flex;justify-content:space-between;align-items:center;
+  background:rgba(0,0,0,0.55);backdrop-filter:blur(18px);
+  border-bottom:1px solid rgba(212,175,55,0.1);z-index:1000;
+}
+.logo{font-weight:700;font-size:22px;
+  background:linear-gradient(90deg,#d4af37,#a855f7);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  letter-spacing:2px;
+}
+.header-right{display:flex;align-items:center;gap:16px}
+nav a{margin-left:28px;color:#bbb;text-decoration:none;font-size:14px;
+  letter-spacing:1px;text-transform:uppercase;transition:.3s;position:relative;}
+nav a::after{content:'';position:absolute;bottom:-4px;left:0;width:0;height:1px;background:#d4af37;transition:.3s;}
+nav a:hover{color:#d4af37}
+nav a:hover::after{width:100%}
+
+/* LANGUAGE SELECTOR */
+.lang-selector{position:relative}
+.lang-btn{
+  display:flex;align-items:center;gap:6px;
+  background:rgba(212,175,55,0.08);
+  border:1px solid rgba(212,175,55,0.25);
+  border-radius:20px;padding:7px 14px;
+  color:#d4af37;font-size:13px;font-family:'Inter',sans-serif;
+  cursor:pointer;transition:.3s;letter-spacing:.5px;
+}
+.lang-btn:hover{background:rgba(212,175,55,0.15);border-color:rgba(212,175,55,0.5)}
+.lang-btn .flag{font-size:16px}
+.lang-btn .arrow{font-size:10px;transition:transform .25s}
+.lang-selector.open .lang-btn .arrow{transform:rotate(180deg)}
+.lang-dropdown{
+  position:absolute;top:calc(100% + 8px);right:0;
+  background:#0f0f12;border:1px solid rgba(212,175,55,0.2);
+  border-radius:14px;padding:8px;min-width:170px;
+  opacity:0;pointer-events:none;transform:translateY(-6px);
+  transition:opacity .22s ease,transform .22s ease;z-index:999;
+}
+.lang-selector.open .lang-dropdown{opacity:1;pointer-events:auto;transform:translateY(0)}
+.lang-option{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 14px;border-radius:10px;
+  cursor:pointer;font-size:14px;color:#ccc;
+  transition:background .2s,color .2s;
+}
+.lang-option:hover{background:rgba(212,175,55,0.1);color:#d4af37}
+.lang-option.active{color:#d4af37;font-weight:600}
+.lang-option .flag{font-size:18px}
+
+#bg{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
+
+.hero{
+  height:100vh;display:flex;align-items:center;
+  justify-content:space-between;padding:0 80px;
+  position:relative;z-index:2;
+}
+.hero-text{max-width:580px;position:relative}
+.tag{
+  display:inline-block;margin-bottom:16px;
+  padding:6px 16px;border:1px solid rgba(212,175,55,0.4);
+  border-radius:30px;font-size:12px;letter-spacing:2px;
+  color:#d4af37;text-transform:uppercase;background:rgba(212,175,55,0.05);
+}
+.hero h1{
+  font-size:62px;line-height:1.1;font-weight:700;
+  background:linear-gradient(120deg,#d4af37 0%,#a855f7 52%,#ffffff 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.hero p{margin-top:22px;font-size:18px;line-height:1.7;color:rgba(255,255,255,0.92);}
+.hero-cta{display:flex;gap:16px;margin-top:36px;align-items:center}
+.btn{
+  padding:14px 32px;background:linear-gradient(90deg,#7c3aed,#d4af37);
+  border:none;border-radius:30px;color:#fff;font-weight:600;font-size:15px;cursor:pointer;
+  transition:transform .3s ease;text-decoration:none;display:inline-block;
+  position:relative;overflow:hidden;
+}
+.btn::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,#d4af37,#7c3aed);opacity:0;transition:.4s;}
+.btn:hover::before{opacity:1}
+.btn span{position:relative;z-index:1}
+.btn:hover{transform:scale(1.05)}
+.btn-ghost{
+  padding:14px 28px;background:transparent;
+  border:1px solid rgba(212,175,55,0.4);border-radius:30px;
+  color:#d4af37;font-weight:600;font-size:15px;cursor:pointer;
+  transition:.3s;text-decoration:none;display:inline-block;
+}
+.btn-ghost:hover{background:rgba(212,175,55,0.1);border-color:#d4af37}
+
+.section{padding:130px 80px;position:relative;z-index:2}
+.section-header{text-align:center;margin-bottom:60px}
+.section-label{display:inline-block;margin-bottom:14px;font-size:11px;letter-spacing:3px;color:#d4af37;text-transform:uppercase;}
+h2{font-size:44px;font-weight:700;color:#f5f2ff;display:inline-block;}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:32px}
+
+.card-wrapper{perspective:1000px}
+.card{
+  background:linear-gradient(145deg,#080808,#111216);
+  padding:38px 32px;border-radius:22px;
+  border:1px solid rgba(212,175,55,0.12);
+  position:relative;overflow:hidden;
+  transform-style:preserve-3d;
+  transition:transform .08s ease,border-color .4s ease;cursor:pointer;
+}
+.card::after{
+  content:'';position:absolute;width:150px;height:150px;
+  background:radial-gradient(circle,rgba(212,175,55,0.22) 0%,transparent 70%);
+  border-radius:50%;pointer-events:none;transform:translate(-50%,-50%);
+  transition:opacity .3s;opacity:0;left:var(--mx,50%);top:var(--my,50%);z-index:0;
+}
+.card:hover::after{opacity:1}
+.card::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(168,85,247,0.10),rgba(212,175,55,0.10));
+  opacity:0;transition:.4s;z-index:0;border-radius:22px;
+}
+.card:hover::before{opacity:1}
+.card:hover{border-color:rgba(212,175,55,0.35)}
+.card-icon{font-size:38px;margin-bottom:18px;position:relative;z-index:1;display:block;transition:transform .3s;}
+.card:hover .card-icon{transform:scale(1.2) translateZ(20px)}
+.card h3{font-size:22px;font-weight:600;margin-bottom:10px;position:relative;z-index:1;transition:color .3s;}
+.card:hover h3{color:#d4af37}
+.card p{color:#8d8d95;font-size:14px;line-height:1.7;position:relative;z-index:1}
+
+.contact-container{
+  max-width:620px;margin:0 auto;
+  background:linear-gradient(145deg,rgba(8,8,8,0.92),rgba(14,14,18,0.94));
+  padding:48px;border-radius:28px;border:1px solid rgba(168,85,247,0.22);
+  backdrop-filter:blur(14px);
+  transition:transform .28s ease,border-color .28s ease;
+}
+.contact-container:hover{transform:translateY(-4px);border-color:rgba(212,175,55,0.35)}
+.contact-container:focus-within{transform:translateY(-4px);border-color:rgba(212,175,55,0.45)}
+.contact-container h3{font-size:22px;margin-bottom:6px}
+.contact-container p{color:#8d8d95;margin-bottom:20px;font-size:14px}
+.contact-box input,.contact-box textarea{
+  width:100%;margin:10px 0;padding:16px 20px;
+  background:rgba(255,255,255,0.035);border:1px solid rgba(255,255,255,0.08);
+  border-radius:14px;color:#fff;font-family:'Inter',sans-serif;font-size:15px;
+  transition:transform .22s ease,border-color .22s ease,background .22s ease;
+}
+.contact-box input::placeholder,.contact-box textarea::placeholder{color:#7d7d86}
+.contact-box input:hover,.contact-box textarea:hover{
+  transform:translateY(-2px);border-color:rgba(168,85,247,0.32);background:rgba(168,85,247,0.05);
+}
+.contact-box input:focus,.contact-box textarea:focus{
+  outline:none;transform:translateY(-2px);
+  border-color:rgba(212,175,55,0.52);background:rgba(212,175,55,0.045);
+}
+.contact-box textarea{height:150px;resize:vertical}
+
+/* GDPR CONSENT */
+.gdpr-consent{display:flex;align-items:flex-start;gap:12px;margin:16px 0 0;padding:14px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);}
+.gdpr-consent input[type="checkbox"]{
+  width:18px;height:18px;min-width:18px;margin-top:2px;
+  accent-color:#d4af37;cursor:pointer;
+}
+.gdpr-consent label{font-size:13px;color:#9a9a9a;line-height:1.5;cursor:pointer;}
+.gdpr-consent a{color:#d4af37;text-decoration:underline;}
+.gdpr-consent a:hover{color:#a855f7}
+
+.contact-box button{
+  width:100%;margin-top:22px;padding:18px;
+  background:linear-gradient(90deg,#7c3aed,#d4af37);
+  border:none;border-radius:14px;color:#fff;
+  font-weight:700;font-size:16px;cursor:pointer;
+  transition:transform .3s ease;letter-spacing:1px;text-transform:uppercase;
+}
+.contact-box button:hover{transform:translateY(-2px) scale(1.01)}
+#msg{margin-top:18px;text-align:center;font-weight:600;font-size:14px}
+.success{color:#4ade80!important}
+.error{color:#f87171!important}
+
+/* COOKIE BANNER */
+#cookie-banner{
+  position:fixed;bottom:0;left:0;right:0;z-index:9999;
+  background:#0d0d10;border-top:1px solid rgba(212,175,55,0.2);
+  padding:20px 40px;display:flex;align-items:center;
+  justify-content:space-between;gap:20px;flex-wrap:wrap;
+  transform:translateY(0);transition:transform .4s ease;
+}
+#cookie-banner.hidden{transform:translateY(110%)}
+#cookie-banner p{font-size:13px;color:#aaa;max-width:680px;line-height:1.6;}
+#cookie-banner a{color:#d4af37;text-decoration:underline;}
+.cookie-btns{display:flex;gap:10px;flex-shrink:0}
+.cookie-accept{
+  padding:10px 22px;background:linear-gradient(90deg,#7c3aed,#d4af37);
+  border:none;border-radius:20px;color:#fff;font-size:13px;font-weight:600;
+  cursor:pointer;transition:transform .2s;
+}
+.cookie-accept:hover{transform:scale(1.04)}
+.cookie-reject{
+  padding:10px 22px;background:transparent;
+  border:1px solid rgba(212,175,55,0.35);border-radius:20px;
+  color:#d4af37;font-size:13px;font-weight:600;cursor:pointer;transition:.2s;
+}
+.cookie-reject:hover{background:rgba(212,175,55,0.08)}
+
+/* PRIVACY MODAL */
+.modal-overlay{
+  display:none;position:fixed;inset:0;z-index:10000;
+  background:rgba(0,0,0,0.8);backdrop-filter:blur(6px);
+  align-items:center;justify-content:center;
+}
+.modal-overlay.open{display:flex}
+.modal-box{
+  background:#0d0d10;border:1px solid rgba(212,175,55,0.2);
+  border-radius:22px;max-width:700px;width:90%;max-height:80vh;
+  overflow-y:auto;padding:40px;position:relative;
+}
+.modal-box h2{font-size:26px;margin-bottom:20px;color:#d4af37}
+.modal-box h3{font-size:16px;margin:20px 0 8px;color:#f5f2ff}
+.modal-box p,.modal-box li{font-size:14px;color:#9a9a9a;line-height:1.7}
+.modal-box ul{padding-left:18px;margin-bottom:10px}
+.modal-close{
+  position:absolute;top:16px;right:20px;background:none;border:none;
+  color:#777;font-size:24px;cursor:pointer;transition:color .2s;line-height:1;
+}
+.modal-close:hover{color:#d4af37}
+
+.scroll-hint{
+  position:absolute;bottom:40px;left:50%;transform:translateX(-50%);
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+  color:#555;font-size:11px;letter-spacing:2px;text-transform:uppercase;
+  animation:bob 2s ease-in-out infinite;
+}
+.scroll-hint span{font-size:22px}
+@keyframes bob{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(8px)}}
+.stats{display:flex;gap:50px;margin-top:44px;border-top:1px solid rgba(255,255,255,0.06);padding-top:36px;flex-wrap:wrap;}
+.stat-num{font-size:36px;font-weight:700;color:#d4af37}
+.stat-label{font-size:12px;color:#777;text-transform:uppercase;letter-spacing:2px;margin-top:4px}
+
+@media(max-width:768px){
+  header{padding:15px 22px}
+  .hero,.section{padding:80px 22px}
+  .hero h1{font-size:40px}
+  h2{font-size:32px}
+  .stats{gap:30px}
+  #cookie-banner{padding:16px 20px}
+  nav{display:none}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">&#x27E8;DEV/&#x27E9;</div>
+  <div class="header-right">
+    <nav>
+      <a href="#services" data-i18n="nav_services">Servizi</a>
+      <a href="#projects" data-i18n="nav_projects">Progetti</a>
+      <a href="#contact" data-i18n="nav_contact">Contatti</a>
+    </nav>
+    <div class="lang-selector" id="langSelector">
+      <button class="lang-btn" id="langBtn" aria-label="Seleziona lingua">
+        <span class="flag" id="currentFlag">&#x1F1EE;&#x1F1F9;</span>
+        <span id="currentLangLabel">IT</span>
+        <span class="arrow">&#x25BE;</span>
+      </button>
+      <div class="lang-dropdown" id="langDropdown">
+        <div class="lang-option active" data-lang="it"><span class="flag">&#x1F1EE;&#x1F1F9;</span>Italiano</div>
+        <div class="lang-option" data-lang="en"><span class="flag">&#x1F1EC;&#x1F1E7;</span>English</div>
+        <div class="lang-option" data-lang="fr"><span class="flag">&#x1F1EB;&#x1F1F7;</span>Fran&#xe7;ais</div>
+        <div class="lang-option" data-lang="de"><span class="flag">&#x1F1E9;&#x1F1EA;</span>Deutsch</div>
+        <div class="lang-option" data-lang="es"><span class="flag">&#x1F1EA;&#x1F1F8;</span>Espa&#xf1;ol</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<canvas id="bg"></canvas>
+
+<section class="hero">
+  <div class="hero-text">
+    <span class="tag" data-i18n="tag">&#x1F680; Disponibile per nuovi progetti</span>
+    <h1 data-i18n="hero_title">Sviluppo siti web e gestionali</h1>
+    <p data-i18n="hero_sub">Soluzioni moderne, veloci e scalabili &#x2014; progettate per far crescere il tuo business con design che colpisce.</p>
+    <div class="hero-cta">
+      <a href="#contact" class="btn"><span data-i18n="cta_primary">Richiedi preventivo</span></a>
+      <a href="#projects" class="btn-ghost" data-i18n="cta_secondary">Vedi progetti</a>
+    </div>
+    <div class="stats">
+      <div><div class="stat-num">10+</div><div class="stat-label" data-i18n="stat_projects">Progetti</div></div>
+      <div><div class="stat-num">1+</div><div class="stat-label" data-i18n="stat_years">Anni esperienza</div></div>
+      <div><div class="stat-num">100%</div><div class="stat-label" data-i18n="stat_sat">Soddisfazione</div></div>
+    </div>
+  </div>
+  <div class="scroll-hint"><span>&#x2193;</span><span data-i18n="scroll">scroll</span></div>
+</section>
+
+<section class="section" id="services">
+  <div class="section-header">
+    <div class="section-label" data-i18n="services_label">Cosa faccio</div>
+    <h2 data-i18n="services_title">Servizi</h2>
+  </div>
+  <div class="grid">
+    <div class="card-wrapper"><div class="card">
+      <span class="card-icon">&#x1F310;</span>
+      <h3 data-i18n="s1_title">Siti Web</h3>
+      <p data-i18n="s1_desc">Design responsive, ottimizzato SEO e ad alta velocit&#xe0; per ogni dispositivo.</p>
+    </div></div>
+    <div class="card-wrapper"><div class="card">
+      <span class="card-icon">&#x2699;&#xFE0F;</span>
+      <h3 data-i18n="s2_title">Gestionali</h3>
+      <p data-i18n="s2_desc">Software su misura per automatizzare e semplificare la tua azienda.</p>
+    </div></div>
+    <div class="card-wrapper"><div class="card">
+      <span class="card-icon">&#x1F4C4;</span>
+      <h3 data-i18n="s3_title">Landing Page</h3>
+      <p data-i18n="s3_desc">Pagine ad alta conversione pensate per le tue campagne pubblicitarie.</p>
+    </div></div>
+    <div class="card-wrapper"><div class="card">
+      <span class="card-icon">&#x1F3A8;</span>
+      <h3 data-i18n="s4_title">Branding</h3>
+      <p data-i18n="s4_desc">Identit&#xe0; visiva, logo e palette colori che rendono unico il tuo brand.</p>
+    </div></div>
+  </div>
+</section>
+
+<section class="section" id="projects">
+  <div class="section-header">
+    <div class="section-label" data-i18n="projects_label">Portfolio</div>
+    <h2 data-i18n="projects_title">Progetti</h2>
+  </div>
+  <div class="grid">
+    <div class="card-wrapper"><div class="card">
+      <span class="card-icon">&#x1F6D2;</span>
+      <h3 data-i18n="p1_title">E-commerce</h3>
+      <p data-i18n="p1_desc">Piattaforma di vendita online completa con pagamenti integrati.</p>
+    </div></div>
+    <div class="card-wrapper"><div class="card">
+      <span class="card-icon">&#x1F3E2;</span>
+      <h3 data-i18n="p2_title">Sito Aziendale</h3>
+      <p data-i18n="p2_desc">Presenza digitale professionale e istituzionale ad alto impatto.</p>
+    </div></div>
+    <div class="card-wrapper"><div class="card">
+      <span class="card-icon">&#x1F4C8;</span>
+      <h3 data-i18n="p3_title">Landing ADV</h3>
+      <p data-i18n="p3_desc">Campagne pubblicitarie con tassi di conversione elevati.</p>
+    </div></div>
+  </div>
+</section>
+
+<section class="section" id="contact">
+  <div class="section-header">
+    <div class="section-label" data-i18n="contact_label">Parliamo</div>
+    <h2 data-i18n="contact_title">Contattami</h2>
+  </div>
+  <div class="contact-container">
+    <h3 data-i18n="contact_h3">Hai un progetto in mente?</h3>
+    <p data-i18n="contact_sub">Scrivimi, rispondo entro 24 ore.</p>
+    <form id="contact-form" class="contact-box">
+      <input type="text" name="name" data-i18n-placeholder="ph_name" placeholder="Il tuo nome" required>
+      <input type="email" name="email" data-i18n-placeholder="ph_email" placeholder="La tua email" required>
+      <input type="tel" name="phone" data-i18n-placeholder="ph_phone" placeholder="Il tuo numero di telefono">
+      <textarea name="message" data-i18n-placeholder="ph_message" placeholder="Descrivi il tuo progetto..." required></textarea>
+      <div class="gdpr-consent">
+        <input type="checkbox" id="gdpr-check" required style="
+        position: absolute;
+        opacity: 0;
+        width: 1px;
+        height: 1px;
+        pointer-events: none;
+        ">
+        <label for="gdpr-check" data-i18n-html="gdpr_label">
+          Ho letto e accetto la <a href="#" onclick="openPrivacy(event)">Privacy Policy</a>. Acconsento al trattamento dei miei dati personali ai sensi del Regolamento UE 2016/679 (GDPR) per ricevere una risposta alla mia richiesta.
+        </label>
+      </div>
+      <button type="submit" data-i18n="submit_btn">&#x2709;&#xFE0F; Invia richiesta</button>
+    </form>
+    <p id="msg"></p>
+  </div>
+</section>
+
+<!-- COOKIE BANNER -->
+<div id="cookie-banner">
+  <p data-i18n-html="cookie_text">
+    &#x1F36A; Questo sito utilizza solo cookie tecnici necessari al funzionamento. Nessun cookie di profilazione o tracciamento. Leggi la nostra <a href="#" onclick="openPrivacy(event)">Privacy Policy</a>.
+  </p>
+  <div class="cookie-btns">
+    <button class="cookie-reject" onclick="closeCookieBanner()" data-i18n="cookie_reject">Chiudi</button>
+    <button class="cookie-accept" onclick="closeCookieBanner()" data-i18n="cookie_accept">Ho capito</button>
+  </div>
+</div>
+
+<!-- PRIVACY MODAL -->
+<div class="modal-overlay" id="privacyModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closePrivacy()" aria-label="Chiudi">&#x2715;</button>
+    <h2 data-i18n="privacy_title">Privacy Policy</h2>
+    <p data-i18n="privacy_date"><em>Ultimo aggiornamento: Aprile 2026</em></p>
+    <h3 data-i18n="privacy_s1_title">1. Titolare del trattamento</h3>
+    <p data-i18n="privacy_s1_body">Il titolare del trattamento dei dati &#xe8; il proprietario di questo sito web. Per qualsiasi informazione relativa al trattamento dei tuoi dati puoi contattarci tramite il form di contatto.</p>
+    <h3 data-i18n="privacy_s2_title">2. Dati raccolti e finalit&#xe0;</h3>
+    <p data-i18n="privacy_s2_body">Attraverso il form di contatto vengono raccolti i seguenti dati personali: nome, indirizzo email, numero di telefono (facoltativo) e messaggio. Questi dati vengono trattati esclusivamente per rispondere alla tua richiesta di contatto (base giuridica: consenso, art. 6(1)(a) GDPR).</p>
+    <h3 data-i18n="privacy_s3_title">3. Conservazione dei dati</h3>
+    <p data-i18n="privacy_s3_body">I dati inviati tramite il form vengono conservati esclusivamente nella casella email del titolare e non vengono registrati su database. Non vengono condivisi con terze parti.</p>
+    <h3 data-i18n="privacy_s4_title">4. Cookie</h3>
+    <p data-i18n="privacy_s4_body">Questo sito utilizza esclusivamente cookie tecnici necessari al funzionamento. Non vengono utilizzati cookie di profilazione, tracciamento o analisi (nessun Google Analytics, Facebook Pixel o simili).</p>
+    <h3 data-i18n="privacy_s5_title">5. I tuoi diritti</h3>
+    <p data-i18n="privacy_s5_body">Ai sensi del GDPR (artt. 15-22) hai il diritto di accedere, rettificare, cancellare i tuoi dati, opporti al trattamento e richiedere la portabilit&#xe0;. Puoi esercitare questi diritti contattandoci tramite il form.</p>
+    <h3 data-i18n="privacy_s6_title">6. Autorit&#xe0; di controllo</h3>
+    <p data-i18n="privacy_s6_body">Hai il diritto di proporre reclamo al Garante per la Protezione dei Dati Personali (www.garanteprivacy.it) qualora ritieni che il trattamento dei tuoi dati violi il GDPR.</p>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128/examples/js/loaders/GLTFLoader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128/examples/js/loaders/DRACOLoader.js"></script>
+<script>
+
+// ── I18N ──────────────────────────────────────────────────────────────────────
+const LANGS = {
+  it:{flag:'\u{1F1EE}\u{1F1F9}',label:'IT',
+    nav_services:'Servizi',nav_projects:'Progetti',nav_contact:'Contatti',
+    tag:'\u{1F680} Disponibile per nuovi progetti',
+    hero_title:'Sviluppo siti web e gestionali',
+    hero_sub:'Soluzioni moderne, veloci e scalabili \u2014 progettate per far crescere il tuo business con design che colpisce.',
+    cta_primary:'Richiedi preventivo',cta_secondary:'Vedi progetti',
+    stat_projects:'Progetti',stat_years:'Anni esperienza',stat_sat:'Soddisfazione',
+    scroll:'scroll',
+    services_label:'Cosa faccio',services_title:'Servizi',
+    s1_title:'Siti Web',s1_desc:'Design responsive, ottimizzato SEO e ad alta velocit\xe0 per ogni dispositivo.',
+    s2_title:'Gestionali',s2_desc:'Software su misura per automatizzare e semplificare la tua azienda.',
+    s3_title:'Landing Page',s3_desc:'Pagine ad alta conversione pensate per le tue campagne pubblicitarie.',
+    s4_title:'Branding',s4_desc:'Identit\xe0 visiva, logo e palette colori che rendono unico il tuo brand.',
+    projects_label:'Portfolio',projects_title:'Progetti',
+    p1_title:'E-commerce',p1_desc:'Piattaforma di vendita online completa con pagamenti integrati.',
+    p2_title:'Sito Aziendale',p2_desc:'Presenza digitale professionale e istituzionale ad alto impatto.',
+    p3_title:'Landing ADV',p3_desc:'Campagne pubblicitarie con tassi di conversione elevati.',
+    contact_label:'Parliamo',contact_title:'Contattami',
+    contact_h3:'Hai un progetto in mente?',contact_sub:'Scrivimi, rispondo entro 24 ore.',
+    ph_name:'Il tuo nome',ph_email:'La tua email',ph_phone:'Il tuo numero di telefono',ph_message:'Descrivi il tuo progetto...',
+    gdpr_label:'Ho letto e accetto la <a href="#" onclick="openPrivacy(event)">Privacy Policy</a>. Acconsento al trattamento dei miei dati personali ai sensi del Regolamento UE 2016/679 (GDPR) per ricevere una risposta alla mia richiesta.',
+    submit_btn:'\u2709\uFE0F Invia richiesta',
+    cookie_text:'\u{1F36A} Questo sito utilizza solo cookie tecnici necessari al funzionamento. Nessun cookie di profilazione o tracciamento. Leggi la nostra <a href="#" onclick="openPrivacy(event)">Privacy Policy</a>.',
+    cookie_reject:'Chiudi',cookie_accept:'Ho capito',
+    privacy_title:'Privacy Policy',privacy_date:'<em>Ultimo aggiornamento: Aprile 2026</em>',
+    privacy_s1_title:'1. Titolare del trattamento',privacy_s1_body:'Il titolare del trattamento dei dati \xe8 il proprietario di questo sito web. Per qualsiasi informazione relativa al trattamento dei tuoi dati puoi contattarci tramite il form di contatto.',
+    privacy_s2_title:'2. Dati raccolti e finalit\xe0',privacy_s2_body:'Attraverso il form di contatto vengono raccolti i seguenti dati: nome, email, telefono (facoltativo) e messaggio. Trattati esclusivamente per rispondere alla tua richiesta (art. 6(1)(a) GDPR).',
+    privacy_s3_title:'3. Conservazione dei dati',privacy_s3_body:'I dati inviati tramite il form vengono conservati esclusivamente nella casella email del titolare e non vengono registrati su database. Non vengono condivisi con terze parti.',
+    privacy_s4_title:'4. Cookie',privacy_s4_body:'Questo sito utilizza esclusivamente cookie tecnici necessari al funzionamento. Nessun cookie di profilazione, tracciamento o analisi.',
+    privacy_s5_title:'5. I tuoi diritti',privacy_s5_body:'Ai sensi del GDPR (artt. 15-22) hai il diritto di accedere, rettificare, cancellare i tuoi dati. Puoi esercitare questi diritti contattandoci tramite il form.',
+    privacy_s6_title:'6. Autorit\xe0 di controllo',privacy_s6_body:'Hai il diritto di proporre reclamo al Garante per la Protezione dei Dati Personali (www.garanteprivacy.it).',
+    success_msg:'\u2705 Messaggio inviato con successo!',error_msg:'\u274C Errore durante l\u2019invio'
+  },
+  en:{flag:'\u{1F1EC}\u{1F1E7}',label:'EN',
+    nav_services:'Services',nav_projects:'Projects',nav_contact:'Contact',
+    tag:'\u{1F680} Available for new projects',
+    hero_title:'Web & Management Software Development',
+    hero_sub:'Modern, fast and scalable solutions \u2014 designed to grow your business with striking design.',
+    cta_primary:'Get a quote',cta_secondary:'View projects',
+    stat_projects:'Projects',stat_years:'Years experience',stat_sat:'Satisfaction',
+    scroll:'scroll',
+    services_label:'What I do',services_title:'Services',
+    s1_title:'Websites',s1_desc:'Responsive, SEO-optimised design at high speed for every device.',
+    s2_title:'Management Software',s2_desc:'Custom software to automate and simplify your business.',
+    s3_title:'Landing Pages',s3_desc:'High-conversion pages designed for your ad campaigns.',
+    s4_title:'Branding',s4_desc:'Visual identity, logo and colour palette to make your brand unique.',
+    projects_label:'Portfolio',projects_title:'Projects',
+    p1_title:'E-commerce',p1_desc:'Complete online sales platform with integrated payments.',
+    p2_title:'Corporate Website',p2_desc:'Professional and institutional digital presence with high impact.',
+    p3_title:'ADV Landing',p3_desc:'Advertising campaigns with high conversion rates.',
+    contact_label:'Let\u2019s talk',contact_title:'Contact me',
+    contact_h3:'Got a project in mind?',contact_sub:'Write to me, I reply within 24 hours.',
+    ph_name:'Your name',ph_email:'Your email',ph_phone:'Your phone number',ph_message:'Describe your project...',
+    gdpr_label:'I have read and accept the <a href="#" onclick="openPrivacy(event)">Privacy Policy</a>. I consent to the processing of my personal data under EU Regulation 2016/679 (GDPR) to receive a reply to my request.',
+    submit_btn:'\u2709\uFE0F Send request',
+    cookie_text:'\u{1F36A} This site only uses technically necessary cookies. No profiling or tracking cookies. Read our <a href="#" onclick="openPrivacy(event)">Privacy Policy</a>.',
+    cookie_reject:'Close',cookie_accept:'Got it',
+    privacy_title:'Privacy Policy',privacy_date:'<em>Last updated: April 2026</em>',
+    privacy_s1_title:'1. Data Controller',privacy_s1_body:'The data controller is the owner of this website. For any information regarding the processing of your data, please contact us via the contact form.',
+    privacy_s2_title:'2. Data collected and purpose',privacy_s2_body:'Through the contact form, the following data is collected: name, email, phone (optional) and message. Processed exclusively to respond to your request (Art. 6(1)(a) GDPR).',
+    privacy_s3_title:'3. Data retention',privacy_s3_body:'Data submitted via the form is stored exclusively in the owner\u2019s email inbox and is not recorded in any database. It is not shared with third parties.',
+    privacy_s4_title:'4. Cookies',privacy_s4_body:'This site uses only technically necessary cookies. No profiling, tracking or analytics cookies are used.',
+    privacy_s5_title:'5. Your rights',privacy_s5_body:'Under the GDPR (Arts. 15-22) you have the right to access, rectify and delete your data. You can exercise these rights by contacting us via the form.',
+    privacy_s6_title:'6. Supervisory authority',privacy_s6_body:'You have the right to lodge a complaint with the Italian Data Protection Authority \u2014 Garante (www.garanteprivacy.it).',
+    success_msg:'\u2705 Message sent successfully!',error_msg:'\u274C Error sending message'
+  },
+  fr:{flag:'\u{1F1EB}\u{1F1F7}',label:'FR',
+    nav_services:'Services',nav_projects:'Projets',nav_contact:'Contact',
+    tag:'\u{1F680} Disponible pour de nouveaux projets',
+    hero_title:'D\xe9veloppement web et logiciels de gestion',
+    hero_sub:'Solutions modernes, rapides et scalables \u2014 con\xe7ues pour faire grandir votre activit\xe9 avec un design percutant.',
+    cta_primary:'Demander un devis',cta_secondary:'Voir les projets',
+    stat_projects:'Projets',stat_years:'Ans d\u2019exp\xe9rience',stat_sat:'Satisfaction',
+    scroll:'scroll',
+    services_label:'Ce que je fais',services_title:'Services',
+    s1_title:'Sites Web',s1_desc:'Design responsive, optimis\xe9 SEO et haute vitesse pour chaque appareil.',
+    s2_title:'Logiciels de gestion',s2_desc:'Logiciels sur mesure pour automatiser et simplifier votre entreprise.',
+    s3_title:'Landing Pages',s3_desc:'Pages \xe0 haute conversion con\xe7ues pour vos campagnes publicitaires.',
+    s4_title:'Branding',s4_desc:'Identit\xe9 visuelle, logo et palette de couleurs pour rendre votre marque unique.',
+    projects_label:'Portfolio',projects_title:'Projets',
+    p1_title:'E-commerce',p1_desc:'Plateforme de vente en ligne compl\xe8te avec paiements int\xe9gr\xe9s.',
+    p2_title:'Site Institutionnel',p2_desc:'Pr\xe9sence num\xe9rique professionnelle et institutionnelle \xe0 fort impact.',
+    p3_title:'Landing ADV',p3_desc:'Campagnes publicitaires avec des taux de conversion \xe9lev\xe9s.',
+    contact_label:'Parlons',contact_title:'Contactez-moi',
+    contact_h3:'Vous avez un projet en t\xeate?',contact_sub:'\xc9crivez-moi, je r\xe9ponds dans les 24 heures.',
+    ph_name:'Votre nom',ph_email:'Votre email',ph_phone:'Votre num\xe9ro de t\xe9l\xe9phone',ph_message:'D\xe9crivez votre projet...',
+    gdpr_label:'J\u2019ai lu et j\u2019accepte la <a href="#" onclick="openPrivacy(event)">Politique de confidentialit\xe9</a>. Je consens au traitement de mes donn\xe9es personnelles conform\xe9ment au R\xe8glement UE 2016/679 (RGPD).',
+    submit_btn:'\u2709\uFE0F Envoyer la demande',
+    cookie_text:'\u{1F36A} Ce site utilise uniquement des cookies techniques n\xe9cessaires. Aucun cookie de profilage ou de suivi. Lisez notre <a href="#" onclick="openPrivacy(event)">Politique de confidentialit\xe9</a>.',
+    cookie_reject:'Fermer',cookie_accept:'J\u2019ai compris',
+    privacy_title:'Politique de confidentialit\xe9',privacy_date:'<em>Derni\xe8re mise \xe0 jour: Avril 2026</em>',
+    privacy_s1_title:'1. Responsable du traitement',privacy_s1_body:'Le responsable du traitement est le propri\xe9taire de ce site web.',
+    privacy_s2_title:'2. Donn\xe9es collect\xe9es',privacy_s2_body:'Via le formulaire: nom, email, t\xe9l\xe9phone (optionnel) et message. Trait\xe9es uniquement pour r\xe9pondre \xe0 votre demande (art. 6(1)(a) RGPD).',
+    privacy_s3_title:'3. Conservation des donn\xe9es',privacy_s3_body:'Les donn\xe9es sont stock\xe9es uniquement dans la bo\xeete mail du responsable, sans base de donn\xe9es ni partage avec des tiers.',
+    privacy_s4_title:'4. Cookies',privacy_s4_body:'Ce site utilise uniquement des cookies techniques n\xe9cessaires. Aucun cookie de profilage ou d\u2019analyse.',
+    privacy_s5_title:'5. Vos droits',privacy_s5_body:'Conform\xe9ment au RGPD (art. 15-22) vous avez le droit d\u2019acc\xe9der, rectifier et supprimer vos donn\xe9es.',
+    privacy_s6_title:'6. Autorit\xe9 de contr\xf4le',privacy_s6_body:'Vous pouvez d\xe9poser une plainte aupr\xe8s de la CNIL (www.cnil.fr) ou du Garante (www.garanteprivacy.it).',
+    success_msg:'\u2705 Message envoy\xe9 avec succ\xe8s!',error_msg:'\u274C Erreur lors de l\u2019envoi'
+  },
+  de:{flag:'\u{1F1E9}\u{1F1EA}',label:'DE',
+    nav_services:'Leistungen',nav_projects:'Projekte',nav_contact:'Kontakt',
+    tag:'\u{1F680} Verf\xfcgbar f\xfcr neue Projekte',
+    hero_title:'Webentwicklung und Verwaltungssoftware',
+    hero_sub:'Moderne, schnelle und skalierbare L\xf6sungen \u2014 entwickelt, um Ihr Unternehmen mit beeindruckendem Design zu wachsen.',
+    cta_primary:'Angebot anfordern',cta_secondary:'Projekte ansehen',
+    stat_projects:'Projekte',stat_years:'Jahre Erfahrung',stat_sat:'Zufriedenheit',
+    scroll:'scroll',
+    services_label:'Was ich mache',services_title:'Leistungen',
+    s1_title:'Webseiten',s1_desc:'Responsives, SEO-optimiertes Design mit hoher Geschwindigkeit f\xfcr jedes Ger\xe4t.',
+    s2_title:'Verwaltungssoftware',s2_desc:'Ma\xdfgeschneiderte Software zur Automatisierung Ihres Unternehmens.',
+    s3_title:'Landing Pages',s3_desc:'Hochkonvertierende Seiten f\xfcr Ihre Werbekampagnen.',
+    s4_title:'Branding',s4_desc:'Visuelle Identit\xe4t, Logo und Farbpalette f\xfcr eine einzigartige Marke.',
+    projects_label:'Portfolio',projects_title:'Projekte',
+    p1_title:'E-commerce',p1_desc:'Vollst\xe4ndige Online-Verkaufsplattform mit integrierten Zahlungen.',
+    p2_title:'Unternehmenswebseite',p2_desc:'Professionelle und institutionelle digitale Pr\xe4senz.',
+    p3_title:'ADV Landing',p3_desc:'Werbekampagnen mit hohen Konversionsraten.',
+    contact_label:'Kontakt',contact_title:'Kontaktieren Sie mich',
+    contact_h3:'Haben Sie ein Projekt im Sinn?',contact_sub:'Schreiben Sie mir, ich antworte innerhalb von 24 Stunden.',
+    ph_name:'Ihr Name',ph_email:'Ihre E-Mail',ph_phone:'Ihre Telefonnummer',ph_message:'Beschreiben Sie Ihr Projekt...',
+    gdpr_label:'Ich habe die <a href="#" onclick="openPrivacy(event)">Datenschutzerkl\xe4rung</a> gelesen und stimme zu. Ich willige in die Verarbeitung meiner Daten gem\xe4\xdf EU-Verordnung 2016/679 (DSGVO) ein.',
+    submit_btn:'\u2709\uFE0F Anfrage senden',
+    cookie_text:'\u{1F36A} Diese Website verwendet nur technisch notwendige Cookies. Keine Profiling- oder Tracking-Cookies. Lesen Sie unsere <a href="#" onclick="openPrivacy(event)">Datenschutzerkl\xe4rung</a>.',
+    cookie_reject:'Schlie\xdfen',cookie_accept:'Verstanden',
+    privacy_title:'Datenschutzerkl\xe4rung',privacy_date:'<em>Letzte Aktualisierung: April 2026</em>',
+    privacy_s1_title:'1. Verantwortlicher',privacy_s1_body:'Verantwortlich f\xfcr die Datenverarbeitung ist der Inhaber dieser Website.',
+    privacy_s2_title:'2. Erhobene Daten',privacy_s2_body:'\xdcber das Kontaktformular: Name, E-Mail, Telefon (optional) und Nachricht. Verarbeitung ausschlie\xdflich zur Beantwortung Ihrer Anfrage (Art. 6(1)(a) DSGVO).',
+    privacy_s3_title:'3. Datenspeicherung',privacy_s3_body:'Die Daten werden ausschlie\xdflich im E-Mail-Postfach des Inhabers gespeichert, ohne Datenbank und ohne Weitergabe an Dritte.',
+    privacy_s4_title:'4. Cookies',privacy_s4_body:'Diese Website verwendet ausschlie\xdflich technisch notwendige Cookies. Keine Profiling- oder Analyse-Cookies.',
+    privacy_s5_title:'5. Ihre Rechte',privacy_s5_body:'Gem\xe4\xdf DSGVO (Art. 15-22) haben Sie das Recht auf Auskunft, Berichtigung und L\xf6schung Ihrer Daten.',
+    privacy_s6_title:'6. Aufsichtsbeh\xf6rde',privacy_s6_body:'Sie k\xf6nnen Beschwerde bei der zust\xe4ndigen Datenschutzbeh\xf6rde oder dem Garante (www.garanteprivacy.it) einlegen.',
+    success_msg:'\u2705 Nachricht erfolgreich gesendet!',error_msg:'\u274C Fehler beim Senden'
+  },
+  es:{flag:'\u{1F1EA}\u{1F1F8}',label:'ES',
+    nav_services:'Servicios',nav_projects:'Proyectos',nav_contact:'Contacto',
+    tag:'\u{1F680} Disponible para nuevos proyectos',
+    hero_title:'Desarrollo web y software de gesti\xf3n',
+    hero_sub:'Soluciones modernas, r\xe1pidas y escalables \u2014 dise\xf1adas para hacer crecer tu negocio con un dise\xf1o impactante.',
+    cta_primary:'Solicitar presupuesto',cta_secondary:'Ver proyectos',
+    stat_projects:'Proyectos',stat_years:'A\xf1os de experiencia',stat_sat:'Satisfacci\xf3n',
+    scroll:'scroll',
+    services_label:'Lo que hago',services_title:'Servicios',
+    s1_title:'Sitios Web',s1_desc:'Dise\xf1o responsive, optimizado SEO y alta velocidad para cada dispositivo.',
+    s2_title:'Software de gesti\xf3n',s2_desc:'Software a medida para automatizar y simplificar tu empresa.',
+    s3_title:'Landing Pages',s3_desc:'P\xe1ginas de alta conversi\xf3n pensadas para tus campa\xf1as publicitarias.',
+    s4_title:'Branding',s4_desc:'Identidad visual, logo y paleta de colores que hacen \xfanica tu marca.',
+    projects_label:'Portfolio',projects_title:'Proyectos',
+    p1_title:'E-commerce',p1_desc:'Plataforma de venta online completa con pagos integrados.',
+    p2_title:'Sitio Corporativo',p2_desc:'Presencia digital profesional e institucional de alto impacto.',
+    p3_title:'Landing ADV',p3_desc:'Campa\xf1as publicitarias con altas tasas de conversi\xf3n.',
+    contact_label:'Hablemos',contact_title:'Cont\xe1ctame',
+    contact_h3:'\xbfTienes un proyecto en mente?',contact_sub:'Esch\xedbeme, respondo en 24 horas.',
+    ph_name:'Tu nombre',ph_email:'Tu email',ph_phone:'Tu n\xfamero de tel\xe9fono',ph_message:'Describe tu proyecto...',
+    gdpr_label:'He le\xeddo y acepto la <a href="#" onclick="openPrivacy(event)">Pol\xedtica de privacidad</a>. Consiento el tratamiento de mis datos personales seg\xfan el Reglamento UE 2016/679 (RGPD).',
+    submit_btn:'\u2709\uFE0F Enviar solicitud',
+    cookie_text:'\u{1F36A} Este sitio utiliza solo cookies t\xe9cnicas necesarias. Sin cookies de perfilado ni rastreo. Lee nuestra <a href="#" onclick="openPrivacy(event)">Pol\xedtica de privacidad</a>.',
+    cookie_reject:'Cerrar',cookie_accept:'Entendido',
+    privacy_title:'Pol\xedtica de privacidad',privacy_date:'<em>\xdaltima actualizaci\xf3n: Abril 2026</em>',
+    privacy_s1_title:'1. Responsable del tratamiento',privacy_s1_body:'El responsable del tratamiento es el propietario de este sitio web.',
+    privacy_s2_title:'2. Datos recogidos',privacy_s2_body:'A trav\xe9s del formulario: nombre, email, tel\xe9fono (opcional) y mensaje. Tratados exclusivamente para responder a tu solicitud (art. 6(1)(a) RGPD).',
+    privacy_s3_title:'3. Conservaci\xf3n de datos',privacy_s3_body:'Los datos se almacenan exclusivamente en el email del titular, sin base de datos ni compartici\xf3n con terceros.',
+    privacy_s4_title:'4. Cookies',privacy_s4_body:'Este sitio utiliza exclusivamente cookies t\xe9cnicas necesarias. Sin cookies de perfilado ni an\xe1lisis.',
+    privacy_s5_title:'5. Tus derechos',privacy_s5_body:'Seg\xfan el RGPD (arts. 15-22) tienes derecho a acceder, rectificar y suprimir tus datos.',
+    privacy_s6_title:'6. Autoridad de control',privacy_s6_body:'Puedes presentar una reclamaci\xf3n ante el Garante italiano (www.garanteprivacy.it).',
+    success_msg:'\u2705 \xa1Mensaje enviado con \xe9xito!',error_msg:'\u274C Error al enviar el mensaje'
+  }
+}
+
+let currentLang = 'it'
+
+function applyLang(lang) {
+  const t = LANGS[lang]
+  currentLang = lang
+  document.getElementById('currentFlag').textContent = t.flag
+  document.getElementById('currentLangLabel').textContent = t.label
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n')
+    if (t[key] !== undefined) el.textContent = t[key]
+  })
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    const key = el.getAttribute('data-i18n-placeholder')
+    if (t[key] !== undefined) el.placeholder = t[key]
+  })
+  document.querySelectorAll('[data-i18n-html]').forEach(el => {
+    const key = el.getAttribute('data-i18n-html')
+    if (t[key] !== undefined) el.innerHTML = t[key]
+  })
+  document.querySelectorAll('.lang-option').forEach(el => {
+    el.classList.toggle('active', el.dataset.lang === lang)
+  })
+}
+
+// Lang selector toggle
+const langSelector = document.getElementById('langSelector')
+document.getElementById('langBtn').addEventListener('click', () => {
+  langSelector.classList.toggle('open')
+})
+document.querySelectorAll('.lang-option').forEach(el => {
+  el.addEventListener('click', () => {
+    applyLang(el.dataset.lang)
+    langSelector.classList.remove('open')
+  })
+})
+document.addEventListener('click', e => {
+  if (!langSelector.contains(e.target)) langSelector.classList.remove('open')
+})
+
+// ── COOKIE BANNER ─────────────────────────────────────────────────────────────
+function closeCookieBanner() {
+  document.getElementById('cookie-banner').classList.add('hidden')
+}
+// mostra il banner solo se non già visto (in memoria, no localStorage)
+let cookieSeen = false
+window.addEventListener('load', () => { if (!cookieSeen) { cookieSeen = true } })
+
+// ── PRIVACY MODAL ─────────────────────────────────────────────────────────────
+function openPrivacy(e) {
+  if (e) e.preventDefault()
+  document.getElementById('privacyModal').classList.add('open')
+}
+function closePrivacy() {
+  document.getElementById('privacyModal').classList.remove('open')
+}
+document.getElementById('privacyModal').addEventListener('click', function(e) {
+  if (e.target === this) closePrivacy()
+})
+
+// ── CARD TILT ─────────────────────────────────────────────────────────────────
+document.querySelectorAll('.card').forEach(card => {
+  card.addEventListener('mousemove', e => {
+    const r = card.getBoundingClientRect()
+    const x = e.clientX - r.left, y = e.clientY - r.top
+    card.style.transform = `perspective(1000px) rotateX(${((y-r.height/2)/r.height*2)*-12}deg) rotateY(${((x-r.width/2)/r.width*2)*12}deg) translateZ(10px)`
+    card.style.setProperty('--mx', x+'px')
+    card.style.setProperty('--my', y+'px')
+  })
+  card.addEventListener('mouseleave', () => {
+    card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) translateZ(0px)'
+  })
+})
+
+// ── FORM ──────────────────────────────────────────────────────────────────────
+const form = document.getElementById('contact-form')
+const msgEl = document.getElementById('msg')
+form.addEventListener('submit', async e => {
+  e.preventDefault()
+  const t = LANGS[currentLang]
+  try {
+    const res = await fetch('https://portfolio-backend-production-5024.up.railway.app/contact', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: form.name.value,
+        email: form.email.value,
+        phone: form.phone.value,
+        message: form.message.value,
+        privacy_accepted: true
+      })
+    })
+    await res.json()
+    msgEl.textContent = t.success_msg
+    msgEl.className = 'success'
+    form.reset()
+    setTimeout(() => { msgEl.textContent = ''; msgEl.className = '' }, 5000)
+  } catch {
+    msgEl.textContent = t.error_msg
+    msgEl.className = 'error'
+  }
+})
+
+// ── THREE.JS ──────────────────────────────────────────────────────────────────
+const canvas = document.getElementById('bg')
+const scene = new THREE.Scene()
+const camera = new THREE.PerspectiveCamera(45, innerWidth/innerHeight, 0.1, 100)
+camera.position.set(0, 1.5, 5)
+const renderer = new THREE.WebGLRenderer({canvas, alpha:true, antialias:true, powerPreference:'high-performance'})
+renderer.setSize(innerWidth, innerHeight)
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2))
+renderer.shadowMap.enabled = false
+
+const auroraMat = new THREE.ShaderMaterial({
+  uniforms:{uTime:{value:0},uScrollY:{value:0}},
+  vertexShader:`varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}`,
+  fragmentShader:`
+    uniform float uTime;uniform float uScrollY;varying vec2 vUv;
+    float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
+    float noise(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.0-2.0*f);return mix(mix(hash(i),hash(i+vec2(1,0)),f.x),mix(hash(i+vec2(0,1)),hash(i+vec2(1,1)),f.x),f.y);}
+    float fbm(vec2 p){float v=0.0,a=0.5;for(int i=0;i<5;i++){v+=a*noise(p);p*=2.0;a*=0.5;}return v;}
+    void main(){
+      vec2 uv=vUv;uv.y+=uScrollY*0.00025;float t=uTime*0.12;
+      float aurora=fbm(uv*2.5+vec2(t*.8,t*.3))*.5+fbm(uv*1.8-vec2(t*.5,t*.7))*.5;
+      float bG=smoothstep(.6,0.,length(uv-vec2(.72+sin(t)*.06,.28+cos(t*.8)*.05)));
+      float bV=smoothstep(.6,0.,length(uv-vec2(.28+cos(t)*.05,.72+sin(t*.9)*.06)));
+      float bC=smoothstep(.45,0.,length(uv-vec2(.5+sin(t*.6)*.12,.5+cos(t*.4)*.10)));
+      vec3 dark=vec3(.010,.008,.020),gold=vec3(.831,.686,.216),violet=vec3(.486,.208,.969);
+      vec3 color=dark;
+      color=mix(color,violet,aurora*.26);color=mix(color,gold,bG*.48);
+      color=mix(color,violet,bV*.52);color=mix(color,violet*1.15,bC*.22);
+      color*=(1.-smoothstep(.65,0.,length(uv-vec2(.24,.50)))*.78);
+      color*=max(0.,1.-length(uv-vec2(.5,.5))*.42);
+      gl_FragColor=vec4(color,1.0);}
+  `,
+  depthWrite:false,side:THREE.FrontSide
+})
+const am=new THREE.Mesh(new THREE.PlaneGeometry(30,20),auroraMat);am.position.z=-5;scene.add(am)
+
+function mkP(n,col,sz,sp){const pos=new Float32Array(n*3);for(let i=0;i<n*3;i++)pos[i]=(Math.random()-.5)*sp;const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));return new THREE.Points(g,new THREE.PointsMaterial({color:col,size:sz,transparent:true,opacity:.65,sizeAttenuation:true,depthWrite:false}))}
+const stars=mkP(2000,0xffffff,.022,35),gDust=mkP(500,0xd4af37,.04,22),vDust=mkP(500,0xa855f7,.038,24)
+scene.add(stars,gDust,vDust)
+
+function mkR(r,t,col){return new THREE.Mesh(new THREE.TorusGeometry(r,t,16,120),new THREE.MeshStandardMaterial({color:col,emissive:col,emissiveIntensity:1.2,metalness:1,roughness:.05,transparent:true,opacity:.55}))}
+const ring1=mkR(2.2,.008,0xd4af37);ring1.rotation.x=Math.PI/2
+const ring2=mkR(2.6,.006,0xa855f7);ring2.rotation.x=Math.PI/3;ring2.rotation.y=Math.PI/5
+const ring3=mkR(1.8,.004,0xffffff);ring3.rotation.x=Math.PI/4;ring3.rotation.z=Math.PI/6
+scene.add(ring1,ring2,ring3)
+
+const dL=new THREE.DirectionalLight(0xffffff,2);dL.position.set(5,5,5);scene.add(dL)
+const gL=new THREE.PointLight(0xd4af37,5,14);gL.position.set(-3,3,3);scene.add(gL)
+const vL=new THREE.PointLight(0xa855f7,4,14);vL.position.set(3,-2,2);scene.add(vL)
+const rL=new THREE.PointLight(0xffffff,2,8);rL.position.set(0,0,3);scene.add(rL)
+scene.add(new THREE.AmbientLight(0xffffff,.4))
+
+let laptop
+const loader=new THREE.GLTFLoader(),dracoLoader=new THREE.DRACOLoader()
+dracoLoader.setDecoderPath("https://www.gstatic.com/draco/versioned/decoders/1.5.6/")
+loader.setDRACOLoader(dracoLoader)
+loader.load('models/laptop.glb',g=>{laptop=g.scene;laptop.scale.set(6,6,6);laptop.position.set(0,0,0);laptop.traverse(n=>{if(n.isMesh){n.castShadow=false;n.receiveShadow=false}});scene.add(laptop)},null,()=>{laptop=new THREE.Mesh(new THREE.BoxGeometry(2,1.5,.15),new THREE.MeshStandardMaterial({color:0x111111,metalness:.9,roughness:.1,emissive:0x7c3aed,emissiveIntensity:.3}));laptop.position.set(0,0,0);scene.add(laptop)})
+
+let mx=0,my=0,tx=0,ty=0,scrollY=0,scrollP=0
+window.addEventListener('mousemove',e=>{mx=(e.clientX/innerWidth-.5)*2;my=(e.clientY/innerHeight-.5)})
+window.addEventListener('scroll',()=>{scrollY=window.scrollY;const m=document.body.scrollHeight-window.innerHeight;scrollP=m>0?scrollY/m:0})
+
+const clock=new THREE.Clock();let cRY=0,cRX=0,cPY=0,cSc=6
+function animate(){
+  requestAnimationFrame(animate);const t=clock.getElapsedTime()
+  auroraMat.uniforms.uTime.value=t;auroraMat.uniforms.uScrollY.value=scrollY
+  tx+=(mx-tx)*.04;ty+=(my-ty)*.04
+  camera.position.x=tx*1.5;camera.position.y=1.5-ty;camera.lookAt(0,0,0)
+  const p=scrollP;let tRY,tRX,tPY,tSc
+  if(p<.25){const f=p/.25;tRY=f*Math.PI*.5;tRX=f*.1;tPY=-f*.2;tSc=6+f*.3}
+  else if(p<.5){const f=(p-.25)/.25;tRY=Math.PI*.5+f*Math.PI*.4;tRX=.1+f*.18;tPY=-.2+f*.1;tSc=6.3-f*.3}
+  else if(p<.75){const f=(p-.5)/.25;tRY=Math.PI*.9+f*Math.PI*.5;tRX=.28-f*.28;tPY=-.1+f*.2;tSc=6-f*.7}
+  else{const f=(p-.75)/.25;tRY=Math.PI*1.4+f*Math.PI*.6;tRX=-f*.15;tPY=.1-f*1.1;tSc=5.3-f*.9}
+  cRY+=(tRY-cRY)*.08;cRX+=(tRX-cRX)*.08;cPY+=(tPY-cPY)*.08;cSc+=(tSc-cSc)*.08
+  if(laptop){
+    laptop.rotation.y=cRY+tx*.03+Math.sin(t*.7)*.012
+    laptop.rotation.x=cRX+Math.sin(t*.5)*.008+ty*.04
+    laptop.position.y=cPY
+    const s=Math.max(.5,cSc*(1+Math.sin(t*.9)*.006));laptop.scale.set(s,s,s)
+  }
+  ring1.rotation.z=cRY*.4+t*.35;ring1.rotation.y=t*.1
+  ring2.rotation.z=-cRY*.3-t*.25;ring2.rotation.x=Math.PI/3+cRX*.4
+  ring3.rotation.z=cRY*.2+t*.15;ring3.rotation.y=-t*.12
+  gL.position.x=Math.cos(t*.5)*4;gL.position.z=Math.sin(t*.5)*4;gL.intensity=4+Math.sin(t*2.1)*2
+  vL.position.x=Math.cos(t*.5+Math.PI)*4;vL.position.z=Math.sin(t*.5+Math.PI)*4;vL.intensity=3+Math.cos(t*1.8)*1.5
+  rL.intensity=1.5+Math.sin(t*3.2)*.8
+  stars.rotation.y=t*.012;gDust.rotation.y=t*.022;gDust.rotation.x=t*.009;vDust.rotation.y=-t*.018
+  renderer.render(scene,camera)
+}
+animate()
+window.addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)})
+</script>
+<footer style="text-align:center;padding:32px 24px;color:#444;font-size:13px;border-top:1px solid rgba(255,255,255,0.05);position:relative;z-index:2;">
+  © 2026 Alessandro Ferrara — 
+  <a href="privacy-policy.html" style="color:#d4af37;text-decoration:none;">Privacy Policy</a>
+</footer>
+</body>
+</html>

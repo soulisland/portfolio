@@ -1,0 +1,54 @@
+# Created by venv; see https://docs.python.org/3/library/venv.html
+
+# Ambiente Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+dist/
+build/
+*.egg
+*.whl
+.eggs/
+
+# Virtualenv
+venv/
+env/
+.venv/
+.env/
+
+# Variabili d'ambiente (MAI su git!)
+.env
+*.env
+.env.local
+.env.production
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Dipendenze Node (se usi build tools)
+node_modules/
+.npm/
+
+# Deploy / build output
+dist/
+out/
+
+# Certificati
+*.pem
+*.key
+*.crt
+
+# Database locale
+*.db
+*.sqlite3
