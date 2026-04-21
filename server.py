@@ -4,7 +4,6 @@ Usa: gunicorn -w 4 -b 0.0.0.0:5000 server:app
 """
 import os, logging
 from flask import Flask, request, jsonify
-
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from flask_talisman import Talisman
@@ -17,9 +16,7 @@ load_dotenv()
 
 app = Flask(__name__)
 
-# ─── CORS: solo il tuo dominio ────────────────────────────────────────────────
-ALLOWED_ORIGIN = os.getenv("ALLOWED_ORIGIN", "https://portfolio-vert-mu-fbqkanoz77.vercel.app")
-# ─── CORS manuale (Talisman compatibile) ─────────────────────────────────────
+# ─── CORS ────────────────────────────────────────────────────────────────────
 ALLOWED_ORIGIN = os.getenv("ALLOWED_ORIGIN", "https://portfolio-vert-mu-fbqkanoz77.vercel.app")
 
 @app.after_request
@@ -31,13 +28,14 @@ def add_cors_headers(response):
         response.headers["Access-Control-Allow-Headers"] = "Content-Type"
     return response
 
-@app.route("/contact", methods=["POST", "OPTIONS"])
-@limiter.limit("5 per minute; 200 per day")
-def contact():
-    if request.method == "OPTIONS":
-        return jsonify({}), 200
+# ─── Rate limiting ────────────────────────────────────────────────────────────
+limiter = Limiter(
+    get_remote_address,
+    app=app,
+    default_limits=["200 per day", "50 per hour"],
+)
 
-# ─── Security headers (HTTPS) ─────────────────────────────────────────────────
+# ─── Security headers ─────────────────────────────────────────────────────────
 csp = {
     "default-src": ["'self'"],
     "script-src":  ["'self'", "cdnjs.cloudflare.com", "cdn.jsdelivr.net"],
@@ -56,13 +54,6 @@ Talisman(
     frame_options="DENY",
 )
 
-# ─── Rate limiting ────────────────────────────────────────────────────────────
-limiter = Limiter(
-    get_remote_address,
-    app=app,
-    default_limits=["200 per day", "50 per hour"],
-)
-
 # ─── Logging ──────────────────────────────────────────────────────────────────
 logging.basicConfig(
     level=logging.INFO,
@@ -70,7 +61,6 @@ logging.basicConfig(
     handlers=[logging.StreamHandler()],
 )
 logger = logging.getLogger(__name__)
-
 
 # ─── Helpers ──────────────────────────────────────────────────────────────────
 def send_email(name: str, email: str, phone: str, message: str) -> None:
@@ -101,11 +91,13 @@ Messaggio:
         s.login(smtp_user, smtp_pass)
         s.sendmail(smtp_user, to_email, msg.as_string())
 
-
 # ─── Routes ───────────────────────────────────────────────────────────────────
-@app.route("/contact", methods=["POST"])
-@limiter.limit("5 per minute")
+@app.route("/contact", methods=["POST", "OPTIONS"])
+@limiter.limit("5 per minute; 200 per day")
 def contact():
+    if request.method == "OPTIONS":
+        return jsonify({}), 200
+
     data = request.get_json(silent=True) or {}
     name    = str(data.get("name",    "")).strip()[:120]
     email   = str(data.get("email",   "")).strip()[:254]
@@ -128,12 +120,9 @@ def contact():
         logger.exception("Errore invio email: %s", exc)
         return jsonify({"ok": False, "error": "Errore interno, riprova più tardi"}), 500
 
-
 @app.route("/health")
 def health():
     return jsonify({"status": "ok"})
 
-
 if __name__ == "__main__":
-    # Solo sviluppo locale — in produzione usa gunicorn
     app.run(debug=False, host="127.0.0.1", port=5000)
