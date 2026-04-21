@@ -65,7 +65,7 @@ logger = logging.getLogger(__name__)
 # ─── Helpers ──────────────────────────────────────────────────────────────────
 def send_email(name: str, email: str, phone: str, message: str) -> None:
     smtp_host = os.getenv("SMTP_HOST", "smtp.gmail.com")
-    smtp_port = int(os.getenv("SMTP_PORT", 465))
+    smtp_port = int(os.getenv("SMTP_PORT", 587))
     smtp_user = os.getenv("SMTP_USER")
     smtp_pass = os.getenv("SMTP_PASS")
     to_email  = os.getenv("TO_EMAIL", smtp_user)
@@ -85,7 +85,7 @@ Messaggio:
     """
     msg.attach(MIMEText(body, "plain"))
 
-    with smtplib.SMTP_SSL(smtp_host, smtp_port) as s:
+    with smtplib.SMTP(smtp_host, smtp_port, timeout=10) as s:
         s.ehlo()
         s.starttls()
         s.login(smtp_user, smtp_pass)
