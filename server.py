@@ -4,7 +4,7 @@ Usa: gunicorn -w 4 -b 0.0.0.0:5000 server:app
 """
 import os, logging
 from flask import Flask, request, jsonify
-from flask_cors import CORS
+
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from flask_talisman import Talisman
@@ -19,7 +19,23 @@ app = Flask(__name__)
 
 # ─── CORS: solo il tuo dominio ────────────────────────────────────────────────
 ALLOWED_ORIGIN = os.getenv("ALLOWED_ORIGIN", "https://portfolio-vert-mu-fbqkanoz77.vercel.app")
-CORS(app, origins=[ALLOWED_ORIGIN], supports_credentials=False)
+# ─── CORS manuale (Talisman compatibile) ─────────────────────────────────────
+ALLOWED_ORIGIN = os.getenv("ALLOWED_ORIGIN", "https://portfolio-vert-mu-fbqkanoz77.vercel.app")
+
+@app.after_request
+def add_cors_headers(response):
+    origin = request.headers.get("Origin", "")
+    if origin == ALLOWED_ORIGIN:
+        response.headers["Access-Control-Allow-Origin"] = origin
+        response.headers["Access-Control-Allow-Methods"] = "POST, OPTIONS"
+        response.headers["Access-Control-Allow-Headers"] = "Content-Type"
+    return response
+
+@app.route("/contact", methods=["POST", "OPTIONS"])
+@limiter.limit("5 per minute; 200 per day")
+def contact():
+    if request.method == "OPTIONS":
+        return jsonify({}), 200
 
 # ─── Security headers (HTTPS) ─────────────────────────────────────────────────
 csp = {
