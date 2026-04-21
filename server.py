@@ -7,9 +7,7 @@ from flask import Flask, request, jsonify
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from flask_talisman import Talisman
-import smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
+import resend
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -64,32 +62,16 @@ logger = logging.getLogger(__name__)
 
 # ─── Helpers ──────────────────────────────────────────────────────────────────
 def send_email(name: str, email: str, phone: str, message: str) -> None:
-    smtp_host = os.getenv("SMTP_HOST", "smtp.gmail.com")
-    smtp_port = int(os.getenv("SMTP_PORT", 587))
-    smtp_user = os.getenv("SMTP_USER")
-    smtp_pass = os.getenv("SMTP_PASS")
-    to_email  = os.getenv("TO_EMAIL", smtp_user)
+    resend.api_key = os.getenv("RESEND_API_KEY")
+    to_email = os.getenv("TO_EMAIL")
 
-    msg = MIMEMultipart("alternative")
-    msg["Subject"] = f"Nuovo contatto da {name}"
-    msg["From"]    = smtp_user
-    msg["To"]      = to_email
-
-    body = f"""
-Nome:     {name}
-Email:    {email}
-Telefono: {phone or 'non fornito'}
-
-Messaggio:
-{message}
-    """
-    msg.attach(MIMEText(body, "plain"))
-
-    with smtplib.SMTP(smtp_host, smtp_port, timeout=10) as s:
-        s.ehlo()
-        s.starttls()
-        s.login(smtp_user, smtp_pass)
-        s.sendmail(smtp_user, to_email, msg.as_string())
+    params: resend.Emails.SendParams = {
+        "from": "Portfolio Contact <onboarding@resend.dev>",
+        "to": [to_email],
+        "subject": f"Nuovo contatto da {name}",
+        "text": f"Nome:     {name}\nEmail:    {email}\nTelefono: {phone or 'non fornito'}\n\nMessaggio:\n{message}",
+    }
+    resend.Emails.send(params)
 
 # ─── Routes ───────────────────────────────────────────────────────────────────
 @app.route("/contact", methods=["POST", "OPTIONS"])
@@ -98,7 +80,7 @@ def contact():
     if request.method == "OPTIONS":
         return jsonify({}), 200
 
-    data = request.get_json(silent=True) or {}
+    data    = request.get_json(silent=True) or {}
     name    = str(data.get("name",    "")).strip()[:120]
     email   = str(data.get("email",   "")).strip()[:254]
     phone   = str(data.get("phone",   "")).strip()[:30]
